@@ -1,31 +1,37 @@
-import { User } from '../types/user';
-import { UnauthorizedError } from '../errors/httpErrors';
+import { UnauthorizedError, NotFoundError } from '../errors/httpErrors';
 import { UserRepository } from '../repositories/UserRepository';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-export function verifyPassword(
-  providedPass: string,
-  storedHash: string
-): boolean {
-  return bcrypt.compareSync(providedPass, storedHash);
-}
-
-export function authenticateUser(
+export async function login(
   userRepository: UserRepository,
   username: string,
-  password: string
-): User {
-  const user = userRepository.findByUsername(username);
-
+  passwordAttempt: string
+): Promise<string> {
+  const user = await userRepository.findByUsername(username);
   if (!user) {
-    throw new UnauthorizedError('Invalid username or password');
+    throw new NotFoundError('User not found');
   }
 
-  const isPasswordValid = verifyPassword(password, user.passwordHash);
-
+  const isPasswordValid = bcrypt.compareSync(
+    passwordAttempt,
+    user.passwordHash
+  );
   if (!isPasswordValid) {
-    throw new UnauthorizedError('Invalid username or password');
+    throw new UnauthorizedError('Invalid credentials');
   }
 
-  return user;
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error('JWT_SECRET is not set in environment variables.');
+    throw new UnauthorizedError('Authentication configuration error.');
+  }
+
+  const token = jwt.sign(
+    { userId: user.id, username: user.username, role: user.role },
+    secret,
+    { expiresIn: '1h' }
+  );
+
+  return token;
 }

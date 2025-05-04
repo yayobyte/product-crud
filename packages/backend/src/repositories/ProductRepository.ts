@@ -33,15 +33,16 @@ export class ProductRepository {
         `Product Repository initialized with ${this.products.length} products. Next ID: ${this.nextId}`
       );
     } catch (error) {
-      console.error(
-        'Failed to initialize Product Repository with initial data:',
-        error
-      );
+      const errorMessage =
+        'Failed to initialize Product Repository with initial data';
+      console.error(errorMessage, error);
       this.products = [];
       this.nextId = 1;
-      throw new NotFoundError(
-        'Failed to initialize Product Repository with initial data:'
-      );
+      if (error instanceof Error) {
+        throw new Error(`${errorMessage}: ${error.message}`);
+      } else {
+        throw new Error(`${errorMessage}: Unknown error during initialization`);
+      }
     }
   }
 

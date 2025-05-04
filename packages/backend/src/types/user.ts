@@ -1,4 +1,7 @@
-import { UserRole } from './roles';
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}
 
 export interface User {
   id: number;
