@@ -39,3 +39,26 @@ export const addProduct = (newProductData: Omit<Product, 'id'>): Product => {
   );
   return newProduct;
 };
+
+export const updateProduct = (
+  id: number,
+  updatedData: Partial<Omit<Product, 'id'>>
+): Product | undefined => {
+  const productIndex = products.findIndex((p) => p.id === id);
+
+  if (productIndex === -1) {
+    return undefined;
+  }
+
+  const originalProduct = products[productIndex];
+
+  const updatedProduct: Product = {
+    ...originalProduct,
+    ...updatedData,
+    id: originalProduct.id,
+  };
+
+  products[productIndex] = updatedProduct;
+  console.log(`Updated product with ID: ${id}`);
+  return updatedProduct;
+};

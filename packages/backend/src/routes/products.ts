@@ -1,5 +1,5 @@
 import express, { Router, Request, Response, RequestHandler } from 'express';
-import { getProducts, addProduct } from '../data/products';
+import { getProducts, addProduct, updateProduct } from '../data/products';
 import { Product } from '../types/product';
 
 const router: Router = express.Router();
@@ -7,6 +7,7 @@ const router: Router = express.Router();
 router.get('/', getAllProductsHandler);
 router.get('/:id', getProductByIdHandler);
 router.post('/', createProductHandler);
+router.put('/:id', updateProductHandler);
 
 function getAllProductsHandler(req: Request, res: Response) {
   try {
@@ -63,6 +64,34 @@ function createProductHandler(req: Request, res: Response) {
 
   const createdProduct = addProduct(newProductData);
   res.status(201).json(createdProduct);
+}
+
+function updateProductHandler(req: Request, res: Response) {
+  const productId = parseInt(req.params.id, 10);
+  const updateData = req.body;
+
+  if (isNaN(productId)) {
+    res.status(400).json({ message: 'Invalid product ID format' });
+    return;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    res.status(400).json({ message: 'No update data provided' });
+    return;
+  }
+
+  if (updateData.id) {
+    //id should not be updated
+    delete updateData.id;
+  }
+
+  const updatedProduct = updateProduct(productId, updateData);
+
+  if (updatedProduct) {
+    res.json(updatedProduct);
+  } else {
+    res.status(404).json({ message: 'Product not found' });
+  }
 }
 
 export default router;
