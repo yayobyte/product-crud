@@ -1,11 +1,13 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import productRoutes from './routes/products';
-import { loadInitialProducts } from './data/products';
 import { HttpError } from './errors/httpErrors';
+import { ProductRepository } from './repositories/ProductRepository'; // Import the repository
 
 const app = express();
 const port = process.env.PORT || 3001;
+
+export const productRepository = new ProductRepository();
 
 app.use(cors());
 app.use(express.json());
@@ -36,9 +38,14 @@ function errorHandler(
 }
 
 async function startServer() {
-  await loadInitialProducts();
-  console.log('Initial products loaded successfully.');
-  app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
-  });
+  try {
+    await productRepository.initialize();
+    console.log('Product repository initialized successfully.');
+    app.listen(port, () => {
+      console.log(`Server listening at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }

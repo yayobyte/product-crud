@@ -1,10 +1,5 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
-import {
-  getProducts,
-  addProduct,
-  updateProduct,
-  deleteProduct,
-} from '../data/products';
+import { productRepository } from '../index';
 import { Product } from '../types/product';
 import { BadRequestError, NotFoundError } from '../errors/httpErrors';
 
@@ -22,7 +17,7 @@ function getAllProductsHandler(
   next: NextFunction
 ) {
   try {
-    const products = getProducts();
+    const products = productRepository.getAll();
     res.json(products);
   } catch (error) {
     next(error);
@@ -40,14 +35,8 @@ function getProductByIdHandler(
       throw new BadRequestError('Invalid product ID format');
     }
 
-    const products = getProducts();
-    const product = products.find((p) => p.id === productId);
-
-    if (product) {
-      res.json(product);
-    } else {
-      throw new NotFoundError(`Product with ID ${productId} not found`);
-    }
+    const product = productRepository.getById(productId);
+    res.json(product);
   } catch (error) {
     next(error);
   }
@@ -76,7 +65,7 @@ function createProductHandler(req: Request, res: Response, next: NextFunction) {
       rating: { rate: 0, count: 0 },
     };
 
-    const createdProduct = addProduct(newProductData);
+    const createdProduct = productRepository.create(newProductData);
     res.status(201).json(createdProduct);
   } catch (error) {
     next(error);
@@ -100,7 +89,7 @@ function updateProductHandler(req: Request, res: Response, next: NextFunction) {
       delete updateData.id;
     }
 
-    const updatedProduct = updateProduct(productId, updateData);
+    const updatedProduct = productRepository.update(productId, updateData);
     res.json(updatedProduct);
   } catch (error) {
     next(error);
@@ -115,7 +104,7 @@ function deleteProductHandler(req: Request, res: Response, next: NextFunction) {
       throw new BadRequestError('Invalid product ID format');
     }
 
-    deleteProduct(productId);
+    productRepository.delete(productId);
     res.status(204).send();
   } catch (error) {
     next(error);
