@@ -6,6 +6,16 @@ export class ProductRepository {
   private products: Product[] = [];
   private nextId: number = 1;
 
+  constructor() {
+    this.initialize()
+      .then(() => {
+        console.log('Product Repository initialized successfully.');
+      })
+      .catch((error) => {
+        console.error('Error initializing Product Repository:', error);
+      });
+  }
+
   async initialize(): Promise<void> {
     try {
       console.log(
