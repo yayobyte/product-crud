@@ -62,3 +62,13 @@ export const updateProduct = (
   console.log(`Updated product with ID: ${id}`);
   return updatedProduct;
 };
+
+export const deleteProduct = (id: number): boolean => {
+  const initialLength = products.length;
+  products = products.filter((p) => p.id !== id);
+  const success = products.length < initialLength;
+  if (success) {
+    console.log(`Deleted product with ID: ${id}`);
+  }
+  return success;
+};

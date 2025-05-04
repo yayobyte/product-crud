@@ -1,5 +1,10 @@
 import express, { Router, Request, Response, RequestHandler } from 'express';
-import { getProducts, addProduct, updateProduct } from '../data/products';
+import {
+  getProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+} from '../data/products';
 import { Product } from '../types/product';
 
 const router: Router = express.Router();
@@ -8,6 +13,7 @@ router.get('/', getAllProductsHandler);
 router.get('/:id', getProductByIdHandler);
 router.post('/', createProductHandler);
 router.put('/:id', updateProductHandler);
+router.delete('/:id', deleteProductHandler);
 
 function getAllProductsHandler(req: Request, res: Response) {
   try {
@@ -89,6 +95,23 @@ function updateProductHandler(req: Request, res: Response) {
 
   if (updatedProduct) {
     res.json(updatedProduct);
+  } else {
+    res.status(404).json({ message: 'Product not found' });
+  }
+}
+
+function deleteProductHandler(req: Request, res: Response) {
+  const productId = parseInt(req.params.id, 10);
+
+  if (isNaN(productId)) {
+    res.status(400).json({ message: 'Invalid product ID format' });
+    return;
+  }
+
+  const success = deleteProduct(productId);
+
+  if (success) {
+    res.status(204).send(); // No Content
   } else {
     res.status(404).json({ message: 'Product not found' });
   }
