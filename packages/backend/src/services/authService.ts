@@ -1,12 +1,13 @@
 import { User } from '../types/user';
 import { UnauthorizedError } from '../errors/httpErrors';
 import { UserRepository } from '../repositories/UserRepository';
+import bcrypt from 'bcryptjs';
 
 export function verifyPassword(
   providedPass: string,
   storedHash: string
 ): boolean {
-  return providedPass === storedHash;
+  return bcrypt.compareSync(providedPass, storedHash);
 }
 
 export function authenticateUser(

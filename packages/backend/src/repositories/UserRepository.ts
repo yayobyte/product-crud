@@ -1,17 +1,20 @@
 import { User } from '../types/user';
 import { UserRole } from '../types/roles';
+import bcrypt from 'bcryptjs';
 
-const mockUsers: User[] = [
+const saltRounds = 10;
+
+const mockUsersData = [
   {
     id: 1,
     username: 'admin',
-    passwordHash: 'password123',
+    password: 'password123', // temporal
     role: UserRole.ADMIN,
   },
   {
     id: 2,
     username: 'user',
-    passwordHash: 'password456',
+    password: 'password456', // temporal
     role: UserRole.USER,
   },
 ];
@@ -20,13 +23,15 @@ export class UserRepository {
   private users: User[] = [];
 
   constructor() {
-    // Initialize with mock data
     this.initialize();
   }
 
-  async initialize(): Promise<void> {
-    this.users = [...mockUsers];
-    console.log('User repository initialized with mock data.');
+  initialize(): void {
+    this.users = mockUsersData.map((user) => ({
+      ...user,
+      passwordHash: bcrypt.hashSync(user.password, saltRounds),
+    }));
+    console.log('User repository initialized with hashed mock passwords.');
   }
 
   findByUsername(username: string): User | undefined {
