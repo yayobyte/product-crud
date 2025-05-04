@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import productRoutes from './routes/products';
 import { loadInitialProducts } from './data/products';
+import { HttpError } from './errors/httpErrors';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -26,8 +27,12 @@ function errorHandler(
   res: Response,
   next: NextFunction
 ) {
-  console.error('Unhandled error:', err.stack);
-  res.status(500).json({ message: 'Internal Server Error' });
+  console.error('Error occurred:', err.message);
+  if (err instanceof HttpError || (err as any).isHttpError) {
+    res.status((err as HttpError).status).json({ message: err.message });
+  } else {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 }
 
 async function startServer() {

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Product } from '../types/product';
+import { NotFoundError } from '../errors/httpErrors';
 
 let products: Product[] = [];
 let nextId = 1;
@@ -43,11 +44,11 @@ export const addProduct = (newProductData: Omit<Product, 'id'>): Product => {
 export const updateProduct = (
   id: number,
   updatedData: Partial<Omit<Product, 'id'>>
-): Product | undefined => {
+): Product => {
   const productIndex = products.findIndex((p) => p.id === id);
 
   if (productIndex === -1) {
-    return undefined;
+    throw new NotFoundError(`Product with ID ${id} not found`);
   }
 
   const originalProduct = products[productIndex];
@@ -63,12 +64,13 @@ export const updateProduct = (
   return updatedProduct;
 };
 
-export const deleteProduct = (id: number): boolean => {
+export const deleteProduct = (id: number): void => {
   const initialLength = products.length;
   products = products.filter((p) => p.id !== id);
   const success = products.length < initialLength;
   if (success) {
     console.log(`Deleted product with ID: ${id}`);
+  } else {
+    throw new NotFoundError(`Product with ID ${id} not found`);
   }
-  return success;
 };

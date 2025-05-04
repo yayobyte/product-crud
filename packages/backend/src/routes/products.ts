@@ -1,4 +1,4 @@
-import express, { Router, Request, Response, RequestHandler } from 'express';
+import express, { Router, Request, Response, NextFunction } from 'express';
 import {
   getProducts,
   addProduct,
@@ -6,6 +6,7 @@ import {
   deleteProduct,
 } from '../data/products';
 import { Product } from '../types/product';
+import { BadRequestError, NotFoundError } from '../errors/httpErrors';
 
 const router: Router = express.Router();
 
@@ -15,105 +16,109 @@ router.post('/', createProductHandler);
 router.put('/:id', updateProductHandler);
 router.delete('/:id', deleteProductHandler);
 
-function getAllProductsHandler(req: Request, res: Response) {
+function getAllProductsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   try {
     const products = getProducts();
     res.json(products);
   } catch (error) {
-    console.error('Error retrieving products:', error);
-    res.status(500).json({ message: 'Failed to retrieve products' });
+    next(error);
   }
 }
 
-function getProductByIdHandler(req: Request, res: Response) {
-  const productId = parseInt(req.params.id, 10);
+function getProductByIdHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const productId = parseInt(req.params.id, 10);
+    if (isNaN(productId)) {
+      throw new BadRequestError('Invalid product ID format');
+    }
 
-  if (isNaN(productId)) {
-    res.status(400).json({ message: 'Invalid product ID format' });
-    return;
-  }
+    const products = getProducts();
+    const product = products.find((p) => p.id === productId);
 
-  const products = getProducts();
-  const product = products.find((p) => p.id === productId);
-
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404).json({ message: 'Product not found' });
+    if (product) {
+      res.json(product);
+    } else {
+      throw new NotFoundError(`Product with ID ${productId} not found`);
+    }
+  } catch (error) {
+    next(error);
   }
 }
 
-function createProductHandler(req: Request, res: Response) {
-  const { title, price, description, category, image } = req.body;
+function createProductHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { title, price, description, category, image } = req.body;
 
-  if (
-    !title ||
-    typeof price !== 'number' ||
-    !description ||
-    !category ||
-    !image
-  ) {
-    res
-      .status(400)
-      .json({ message: 'Missing or invalid required product fields' });
-    return;
+    if (
+      !title ||
+      typeof price !== 'number' ||
+      !description ||
+      !category ||
+      !image
+    ) {
+      throw new BadRequestError('Missing or invalid required product fields');
+    }
+
+    const newProductData: Omit<Product, 'id'> = {
+      title,
+      price,
+      description,
+      category,
+      image,
+      rating: { rate: 0, count: 0 },
+    };
+
+    const createdProduct = addProduct(newProductData);
+    res.status(201).json(createdProduct);
+  } catch (error) {
+    next(error);
   }
-
-  const newProductData: Omit<Product, 'id'> = {
-    title,
-    price,
-    description,
-    category,
-    image,
-    rating: { rate: 0, count: 0 },
-  };
-
-  const createdProduct = addProduct(newProductData);
-  res.status(201).json(createdProduct);
 }
 
-function updateProductHandler(req: Request, res: Response) {
-  const productId = parseInt(req.params.id, 10);
-  const updateData = req.body;
+function updateProductHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const productId = parseInt(req.params.id, 10);
+    const updateData = req.body;
 
-  if (isNaN(productId)) {
-    res.status(400).json({ message: 'Invalid product ID format' });
-    return;
-  }
+    if (isNaN(productId)) {
+      throw new BadRequestError('Invalid product ID format');
+    }
 
-  if (Object.keys(updateData).length === 0) {
-    res.status(400).json({ message: 'No update data provided' });
-    return;
-  }
+    if (Object.keys(updateData).length === 0) {
+      throw new BadRequestError('No update data provided');
+    }
 
-  if (updateData.id) {
-    //id should not be updated
-    delete updateData.id;
-  }
+    if ('id' in updateData) {
+      delete updateData.id;
+    }
 
-  const updatedProduct = updateProduct(productId, updateData);
-
-  if (updatedProduct) {
+    const updatedProduct = updateProduct(productId, updateData);
     res.json(updatedProduct);
-  } else {
-    res.status(404).json({ message: 'Product not found' });
+  } catch (error) {
+    next(error);
   }
 }
 
-function deleteProductHandler(req: Request, res: Response) {
-  const productId = parseInt(req.params.id, 10);
+function deleteProductHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const productId = parseInt(req.params.id, 10);
 
-  if (isNaN(productId)) {
-    res.status(400).json({ message: 'Invalid product ID format' });
-    return;
-  }
+    if (isNaN(productId)) {
+      throw new BadRequestError('Invalid product ID format');
+    }
 
-  const success = deleteProduct(productId);
-
-  if (success) {
-    res.status(204).send(); // No Content
-  } else {
-    res.status(404).json({ message: 'Product not found' });
+    deleteProduct(productId);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
   }
 }
 
