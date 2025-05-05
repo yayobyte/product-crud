@@ -4,17 +4,16 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    include: ['**/*.test.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'coverage/**',
         'dist/**',
-        '**/*.test.ts',
         'vitest.config.ts',
-        'src/index.ts',
-        'src/routes/**',
         'src/types/**',
+        'src/index.ts',
       ],
       thresholds: {
         lines: 90,
