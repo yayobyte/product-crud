@@ -1,7 +1,6 @@
 // This adapter file helps bridge between traditional Express and serverless
 
 import { createApp } from './app';
-import { NextRequest, NextResponse } from '@vercel/node';
 
 let app;
 
