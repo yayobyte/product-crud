@@ -4,11 +4,9 @@ import { BadRequestError } from '../errors/httpErrors';
 import { authenticateToken } from '../middleware/authMiddleware';
 import { checkRole } from '../middleware/rbacMiddleware';
 import { UserRole } from '../types/roles';
-import { ProductRepository } from '../repositories/ProductRepository';
+import { ProductService } from '../services/productService';
 
-export function createProductRoutes(
-  productRepository: ProductRepository
-): Router {
+export function createProductRoutes(productService: ProductService): Router {
   const router: Router = express.Router();
 
   // Public routes
@@ -41,7 +39,7 @@ export function createProductRoutes(
     next: NextFunction
   ) {
     try {
-      const products = productRepository.getAll();
+      const products = productService.getAllProducts();
       res.json(products);
     } catch (error) {
       next(error);
@@ -58,7 +56,7 @@ export function createProductRoutes(
       if (isNaN(productId)) {
         throw new BadRequestError('Invalid product ID format');
       }
-      const product = productRepository.getById(productId);
+      const product = productService.getProductById(productId);
       res.json(product);
     } catch (error) {
       next(error);
@@ -89,9 +87,9 @@ export function createProductRoutes(
         description,
         category,
         image,
-        rating: { rate: 0, count: 0 },
+        rating: req.body.rating || { rate: 0, count: 0 },
       };
-      const createdProduct = productRepository.create(newProductData);
+      const createdProduct = productService.createProduct(newProductData);
       res.status(201).json(createdProduct);
     } catch (error) {
       next(error);
@@ -118,7 +116,11 @@ export function createProductRoutes(
       if ('id' in updateData) {
         delete updateData.id;
       }
-      const updatedProduct = productRepository.update(productId, updateData);
+
+      const updatedProduct = productService.updateProduct(
+        productId,
+        updateData
+      );
       res.json(updatedProduct);
     } catch (error) {
       next(error);
@@ -136,7 +138,7 @@ export function createProductRoutes(
       if (isNaN(productId)) {
         throw new BadRequestError('Invalid product ID format');
       }
-      productRepository.delete(productId);
+      productService.deleteProduct(productId);
       res.status(204).send();
     } catch (error) {
       next(error);
