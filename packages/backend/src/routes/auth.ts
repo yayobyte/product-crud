@@ -1,9 +1,8 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
-import { login } from '../services/authService';
+import { AuthService } from '../services/authService';
 import { BadRequestError } from '../errors/httpErrors';
-import { UserRepository } from '../repositories/UserRepository';
 
-export function createAuthRoutes(userRepository: UserRepository): Router {
+export function createAuthRoutes(authService: AuthService): Router {
   const router: Router = express.Router();
 
   router.post('/login', loginHandler);
@@ -16,7 +15,7 @@ export function createAuthRoutes(userRepository: UserRepository): Router {
         throw new BadRequestError('Username and password are required');
       }
 
-      const token = await login(userRepository, username, password);
+      const token = await authService.login(username, password);
 
       res.json({ token });
     } catch (error) {

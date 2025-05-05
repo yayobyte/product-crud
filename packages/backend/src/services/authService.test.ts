@@ -9,7 +9,7 @@ import {
 } from 'vitest';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { login } from './authService';
+import { AuthService } from './authService';
 import { UserRepository } from '../repositories/UserRepository';
 import { User, UserRole } from '../types/user';
 import { UnauthorizedError, NotFoundError } from '../errors/httpErrors';
@@ -26,6 +26,7 @@ type MockSign = (
 
 describe('Auth Service', () => {
   let mockUserRepository: Mocked<UserRepository>;
+  let authService: AuthService;
   const mockUser: User = {
     id: 1,
     username: 'testuser',
@@ -39,6 +40,8 @@ describe('Auth Service', () => {
 
     vi.resetAllMocks();
     mockUserRepository.findByUsername = vi.fn();
+
+    authService = new AuthService(mockUserRepository);
 
     vi.mocked(bcrypt.compareSync).mockReturnValue(false); // Default to false
     vi.mocked<MockSign>(jwt.sign).mockReturnValue('mockToken');
@@ -57,7 +60,7 @@ describe('Auth Service', () => {
       mockUserRepository.findByUsername.mockResolvedValue(mockUser);
       vi.mocked(bcrypt.compareSync).mockReturnValue(true);
 
-      const token = await login(mockUserRepository, 'testuser', 'password123');
+      const token = await authService.login('testuser', 'password123');
 
       expect(token).toBe('mockToken');
       expect(mockUserRepository.findByUsername).toHaveBeenCalledWith(
@@ -83,10 +86,10 @@ describe('Auth Service', () => {
       vi.mocked(bcrypt.compareSync).mockReturnValue(false);
 
       await expect(
-        login(mockUserRepository, 'testuser', 'wrongpassword')
+        authService.login('testuser', 'wrongpassword')
       ).rejects.toThrow(UnauthorizedError);
       await expect(
-        login(mockUserRepository, 'testuser', 'wrongpassword')
+        authService.login('testuser', 'wrongpassword')
       ).rejects.toThrow('Invalid credentials');
 
       expect(mockUserRepository.findByUsername).toHaveBeenCalledWith(
@@ -100,13 +103,13 @@ describe('Auth Service', () => {
     });
 
     it('should throw NotFoundError for non-existent user', async () => {
-      mockUserRepository.findByUsername.mockResolvedValue(undefined); // Use undefined
+      mockUserRepository.findByUsername.mockResolvedValue(undefined);
 
       await expect(
-        login(mockUserRepository, 'nonexistent', 'password123')
+        authService.login('nonexistent', 'password123')
       ).rejects.toThrow(NotFoundError);
       await expect(
-        login(mockUserRepository, 'nonexistent', 'password123')
+        authService.login('nonexistent', 'password123')
       ).rejects.toThrow('User not found');
 
       expect(mockUserRepository.findByUsername).toHaveBeenCalledWith(
@@ -122,10 +125,10 @@ describe('Auth Service', () => {
       vi.mocked(bcrypt.compareSync).mockReturnValue(true);
 
       await expect(
-        login(mockUserRepository, 'testuser', 'password123')
+        authService.login('testuser', 'password123')
       ).rejects.toThrow(UnauthorizedError);
       await expect(
-        login(mockUserRepository, 'testuser', 'password123')
+        authService.login('testuser', 'password123')
       ).rejects.toThrow('Authentication configuration error.');
 
       expect(mockUserRepository.findByUsername).toHaveBeenCalledWith(
