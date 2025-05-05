@@ -14,6 +14,7 @@ export default defineConfig({
         'vitest.config.ts',
         'src/types/**',
         'src/index.ts',
+        'src/api/**', //workaround for vercel
       ],
       thresholds: {
         lines: 90,
