@@ -79,6 +79,7 @@ pnpm test:coverage
 ```
 
 Our code coverage requirements:
+
 - 90% line coverage
 - 90% function coverage
 - 90% branch coverage
@@ -91,16 +92,19 @@ This project uses GitHub Actions for continuous integration and deployment.
 ### Pipeline Stages
 
 1. **Test**:
+
    - Runs unit tests
    - Runs integration tests
    - Generates and uploads coverage reports
    - Tests with Node.js 18 and 20
 
 2. **Build**:
+
    - Builds the application
    - Archives build artifacts
 
 3. **Deploy (Preview)**:
+
    - For pull requests only
    - Deploys to a preview environment
 

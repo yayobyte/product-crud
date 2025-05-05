@@ -3,38 +3,38 @@ name: Product CRUD CI/CD
 # Define when this workflow will run
 on:
   push:
-    branches: [main, master]  # Run on pushes to main or master branch
+    branches: [main, master] # Run on pushes to main or master branch
   pull_request:
-    branches: [main, master]  # Run on PRs targeting main or master branch
+    branches: [main, master] # Run on PRs targeting main or master branch
 
 # Define the jobs in the workflow
 jobs:
   # First job: Run tests
   test:
-    runs-on: ubuntu-latest  # Use Ubuntu as the operating system
+    runs-on: ubuntu-latest # Use Ubuntu as the operating system
 
     # Define a matrix strategy to test with multiple Node.js versions
     strategy:
       matrix:
-        node-version: [18.x, 20.x]  # Test with both Node.js 18 and 20
+        node-version: [18.x, 20.x] # Test with both Node.js 18 and 20
 
     steps:
       # Step 1: Check out the repository code
       - uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js with the version from the matrix
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'  # Enable caching for pnpm
-
-      # Step 3: Install pnpm package manager
+      # Step 2: Install pnpm package manager first
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 9
           run_install: false
+
+      # Step 3: Set up Node.js with the version from the matrix
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm' # Now pnpm is available for caching
 
       # Step 4: Get pnpm cache path for better caching
       - name: Get pnpm store directory
@@ -84,26 +84,26 @@ jobs:
 
   # Second job: Build the application
   build:
-    needs: test  # This job runs only after the test job succeeds
+    needs: test # This job runs only after the test job succeeds
     runs-on: ubuntu-latest
 
     steps:
       # Step 1: Check out the repository code
       - uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'  # Use Node.js 20 for building
-          cache: 'pnpm'
-
-      # Step 3: Install pnpm package manager
+      # Step 2: Install pnpm package manager first
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 9
           run_install: false
+
+      # Step 3: Set up Node.js
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x' # Use Node.js 20 for building
+          cache: 'pnpm'
 
       # Step 4: Install project dependencies
       - name: Install dependencies
@@ -124,60 +124,77 @@ jobs:
 
   # Third job: Deploy to a preview environment (for PRs)
   deploy-preview:
-    if: github.event_name == 'pull_request'  # Only run on PRs
-    needs: build  # This job runs only after the build job succeeds
+    if: github.event_name == 'pull_request' # Only run on PRs
+    needs: build # This job runs only after the build job succeeds
     runs-on: ubuntu-latest
     environment:
       name: preview
-      url: https://preview.example.com  # The URL where the preview will be available
+      # The URL will be set by Vercel automatically
 
     steps:
-      # Step 1: Download the build artifacts
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Download the build artifacts
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: backend-build
-          path: dist
+          path: packages/backend/dist
 
-      # Step 2: Check what files were downloaded
-      - name: Display structure of downloaded files
-        run: ls -R dist
+      # Step 3: Install Node.js (for Vercel CLI)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
 
-      # Step 3: Deploy to preview (placeholder)
-      - name: Setup preview deployment
-        run: echo "Setting up preview deployment..."
-        # In a real scenario, you'd deploy to a preview environment
-        # e.g., using AWS, Azure, Netlify, Vercel, etc.
+      # Step 4: Install Vercel CLI
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      # Step 5: Deploy to Vercel (Preview)
+      - name: Deploy to Vercel Preview
+        working-directory: packages/backend
+        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes
 
   # Fourth job: Deploy to production (for pushes to main)
   deploy-production:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    needs: build  # This job runs only after the build job succeeds
+    needs: build # This job runs only after the build job succeeds
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://api.example.com  # The URL where the production API will be available
+      # The URL will be set by Vercel automatically
 
     steps:
-      # Step 1: Download the build artifacts
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Download the build artifacts
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: backend-build
-          path: dist
+          path: packages/backend/dist
 
-      # Step 2: Check what files were downloaded
-      - name: Display structure of downloaded files
-        run: ls -R dist
+      # Step 3: Install Node.js (for Vercel CLI)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
 
-      # Step 3: Deploy to production (placeholder)
-      - name: Deploy to production
-        run: echo "Deploying to production..."
-        # In a real scenario, you'd deploy to your production environment
-        # e.g., using AWS, Azure, Heroku, etc.
+      # Step 4: Install Vercel CLI
+      - name: Install Vercel CLI
+        run: npm install -g vercel
 
-      # Step 4: Send notification about successful deployment
+      # Step 5: Deploy to Vercel Production
+      - name: Deploy to Vercel (Production)
+        working-directory: packages/backend
+        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
+
+      # Step 6: Send notification about successful deployment
       - name: Send deployment notification
         if: success()
-        run: echo "Sending notification about successful deployment..."
-        # In a real scenario, you might use Slack, email, etc.
+        run: echo "Successfully deployed to Vercel production environment"
