@@ -1,0 +1,183 @@
+name: Product CRUD CI/CD
+
+# Define when this workflow will run
+on:
+  push:
+    branches: [main, master]  # Run on pushes to main or master branch
+  pull_request:
+    branches: [main, master]  # Run on PRs targeting main or master branch
+
+# Define the jobs in the workflow
+jobs:
+  # First job: Run tests
+  test:
+    runs-on: ubuntu-latest  # Use Ubuntu as the operating system
+
+    # Define a matrix strategy to test with multiple Node.js versions
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]  # Test with both Node.js 18 and 20
+
+    steps:
+      # Step 1: Check out the repository code
+      - uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js with the version from the matrix
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'  # Enable caching for pnpm
+
+      # Step 3: Install pnpm package manager
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          run_install: false
+
+      # Step 4: Get pnpm cache path for better caching
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      # Step 5: Set up caching for faster builds
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      # Step 6: Install project dependencies
+      - name: Install dependencies
+        run: pnpm install
+
+      # Step 7: Run unit tests
+      - name: Run backend unit tests
+        run: |
+          cd packages/backend
+          pnpm test
+
+      # Step 8: Run integration tests
+      - name: Run backend integration tests
+        run: |
+          cd packages/backend
+          pnpm test:integration
+
+      # Step 9: Run tests with coverage
+      - name: Run backend coverage tests
+        run: |
+          cd packages/backend
+          pnpm test:coverage
+
+      # Step 10: Upload coverage reports to codecov
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./packages/backend/coverage/
+          flags: backend
+          name: backend-coverage
+
+  # Second job: Build the application
+  build:
+    needs: test  # This job runs only after the test job succeeds
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'  # Use Node.js 20 for building
+          cache: 'pnpm'
+
+      # Step 3: Install pnpm package manager
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          run_install: false
+
+      # Step 4: Install project dependencies
+      - name: Install dependencies
+        run: pnpm install
+
+      # Step 5: Build the backend application
+      - name: Build backend
+        run: |
+          cd packages/backend
+          pnpm build
+
+      # Step 6: Save the build artifacts for later jobs
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-build
+          path: packages/backend/dist
+
+  # Third job: Deploy to a preview environment (for PRs)
+  deploy-preview:
+    if: github.event_name == 'pull_request'  # Only run on PRs
+    needs: build  # This job runs only after the build job succeeds
+    runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: https://preview.example.com  # The URL where the preview will be available
+
+    steps:
+      # Step 1: Download the build artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-build
+          path: dist
+
+      # Step 2: Check what files were downloaded
+      - name: Display structure of downloaded files
+        run: ls -R dist
+
+      # Step 3: Deploy to preview (placeholder)
+      - name: Setup preview deployment
+        run: echo "Setting up preview deployment..."
+        # In a real scenario, you'd deploy to a preview environment
+        # e.g., using AWS, Azure, Netlify, Vercel, etc.
+
+  # Fourth job: Deploy to production (for pushes to main)
+  deploy-production:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    needs: build  # This job runs only after the build job succeeds
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://api.example.com  # The URL where the production API will be available
+
+    steps:
+      # Step 1: Download the build artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-build
+          path: dist
+
+      # Step 2: Check what files were downloaded
+      - name: Display structure of downloaded files
+        run: ls -R dist
+
+      # Step 3: Deploy to production (placeholder)
+      - name: Deploy to production
+        run: echo "Deploying to production..."
+        # In a real scenario, you'd deploy to your production environment
+        # e.g., using AWS, Azure, Heroku, etc.
+
+      # Step 4: Send notification about successful deployment
+      - name: Send deployment notification
+        if: success()
+        run: echo "Sending notification about successful deployment..."
+        # In a real scenario, you might use Slack, email, etc.
