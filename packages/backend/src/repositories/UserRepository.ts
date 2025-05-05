@@ -1,5 +1,4 @@
-import { User } from '../types/user';
-import { UserRole } from '../types/roles';
+import { User, UserRole } from '../types/user';
 import bcrypt from 'bcryptjs';
 
 const saltRounds = 10;

@@ -1,17 +1,16 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import supertest from 'supertest';
 import express from 'express';
 import { createApp } from '../../app';
 import jwt from 'jsonwebtoken';
 import { UserRole } from '../../types/roles';
-import { Product } from '../../types/product';
 
 // Mock environment for tests
 process.env.JWT_SECRET = 'test-secret-key';
 
 describe('Product API Integration Tests', () => {
   let app: express.Application;
-  let request: supertest.SuperTest<supertest.Test>;
+  let request: any; // Using any to bypass type checking issue
   let adminToken: string;
   let userToken: string;
   let testProductId: number;

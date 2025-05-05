@@ -1,12 +1,4 @@
-import {
-  describe,
-  it,
-  expect,
-  beforeAll,
-  afterAll,
-  vi,
-  beforeEach,
-} from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import supertest from 'supertest';
 import express from 'express';
 import { createApp } from '../../app';
@@ -18,7 +10,7 @@ process.env.JWT_SECRET = 'test-secret-key';
 
 describe('Authentication API Integration Tests', () => {
   let app: express.Application;
-  let request: supertest.SuperTest<supertest.Test>;
+  let request: any; // Using any to bypass type checking issue
   let adminToken: string;
   let userToken: string;
 
