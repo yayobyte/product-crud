@@ -106,11 +106,22 @@ This project uses GitHub Actions for continuous integration and deployment.
 3. **Deploy (Preview)**:
 
    - For pull requests only
-   - Deploys to a preview environment
+   - Deploys to Vercel preview environment
+   - Creates a unique URL for each PR for testing
 
 4. **Deploy (Production)**:
    - For pushes to main branch only
-   - Deploys to production environment
+   - Deploys to Vercel production environment
+   - Live API URL: https://backend-5t8eol3t9-yayobytes-projects.vercel.app
+
+### Vercel Deployment
+
+The API is automatically deployed to Vercel through the CI/CD pipeline.
+
+- **Live API**: [https://backend-5t8eol3t9-yayobytes-projects.vercel.app](https://backend-5t8eol3t9-yayobytes-projects.vercel.app)
+- **API Endpoints**:
+  - Products: https://backend-5t8eol3t9-yayobytes-projects.vercel.app/api/products
+  - Authentication: https://backend-5t8eol3t9-yayobytes-projects.vercel.app/api/auth/login
 
 ### Coverage Reports
 
