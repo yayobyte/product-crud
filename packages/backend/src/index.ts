@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { createProductRoutes } from './routes/products';
 import { createAuthRoutes } from './routes/auth';
@@ -49,11 +49,27 @@ function rootHandler(req: Request, res: Response) {
   res.send('Backend server is running!');
 }
 
-function errorHandler(err: Error, req: Request, res: Response) {
+function errorHandler(
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   console.error('Error occurred:', err.message);
-  if (err instanceof HttpError || (err as any).isHttpError) {
-    res.status((err as HttpError).status).json({ message: err.message });
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  if (err instanceof HttpError) {
+    res
+      .status(err.status)
+      .setHeader('Content-Type', 'application/json')
+      .json({ message: err.message });
   } else {
-    res.status(500).json({ message: 'Internal Server Error' });
+    res
+      .status(500)
+      .setHeader('Content-Type', 'application/json')
+      .json({ message: 'Internal Server Error' });
   }
 }
