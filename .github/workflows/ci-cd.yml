@@ -20,7 +20,7 @@ jobs:
 
     steps:
       # Step 1: Check out the repository code
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Step 2: Install pnpm package manager first
       - name: Install pnpm
@@ -31,7 +31,7 @@ jobs:
 
       # Step 3: Set up Node.js with the version from the matrix
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm' # Now pnpm is available for caching
@@ -45,7 +45,7 @@ jobs:
 
       # Step 5: Set up caching for faster builds
       - name: Setup pnpm cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -76,7 +76,7 @@ jobs:
 
       # Step 10: Upload coverage reports to codecov
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           directory: ./packages/backend/coverage/
           flags: backend
@@ -89,7 +89,7 @@ jobs:
 
     steps:
       # Step 1: Check out the repository code
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Step 2: Install pnpm package manager first
       - name: Install pnpm
@@ -100,7 +100,7 @@ jobs:
 
       # Step 3: Set up Node.js
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x' # Use Node.js 20 for building
           cache: 'pnpm'
@@ -117,7 +117,7 @@ jobs:
 
       # Step 6: Save the build artifacts for later jobs
       - name: Archive build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backend-build
           path: packages/backend/dist
@@ -134,18 +134,18 @@ jobs:
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Download the build artifacts
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: backend-build
           path: packages/backend/dist
 
       # Step 3: Install Node.js (for Vercel CLI)
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
@@ -170,18 +170,18 @@ jobs:
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Download the build artifacts
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: backend-build
           path: packages/backend/dist
 
       # Step 3: Install Node.js (for Vercel CLI)
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
