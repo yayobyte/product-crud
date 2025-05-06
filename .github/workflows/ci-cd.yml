@@ -19,6 +19,10 @@ on:
       - 'package.json'
       - 'pnpm-workspace.yaml'
 
+# Default permissions
+permissions:
+  contents: read
+
 # Cancel in-progress runs when a new workflow with the same group is triggered
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -288,24 +292,56 @@ jobs:
           name: frontend-build
           path: packages/frontend/dist
 
-  # Deploy frontend to preview - using Vercel GitHub Integration instead
-  deploy-frontend-preview-notification:
-    if: github.event_name == 'pull_request' && needs.paths-filter.outputs.frontend == 'true'
-    needs: [paths-filter, frontend-build]
-    runs-on: ubuntu-latest
-    environment:
-      name: preview-frontend
-    steps:
-      - name: Vercel Preview Deployment Notification
-        run: echo "Frontend preview is being deployed via Vercel GitHub Integration. Check the Vercel dashboard for deployment status."
-
-  # Deploy frontend to production - using Vercel GitHub Integration instead
-  deploy-frontend-notification:
+  # Deploy frontend to Vercel (production only)
+  deploy-frontend-to-vercel:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && needs.paths-filter.outputs.frontend == 'true'
     needs: [paths-filter, frontend-build]
     runs-on: ubuntu-latest
     environment:
       name: production-frontend
     steps:
-      - name: Vercel Deployment Notification
-        run: echo "Frontend is being deployed via Vercel GitHub Integration. Check the Vercel dashboard for deployment status."
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: packages/frontend/dist
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Deploy to Vercel Production
+        working-directory: packages/frontend
+        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+
+  # Deploy frontend to Vercel (preview for PRs)
+  deploy-frontend-to-vercel-preview:
+    if: github.event_name == 'pull_request' && needs.paths-filter.outputs.frontend == 'true'
+    needs: [paths-filter, frontend-build]
+    runs-on: ubuntu-latest
+    environment:
+      name: preview-frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: packages/frontend/dist
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Deploy to Vercel Preview
+        working-directory: packages/frontend
+        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

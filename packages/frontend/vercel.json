@@ -1,7 +1,9 @@
 {
   "framework": "vite",
-  "buildCommand": "./setup.sh && pnpm build",
-  "devCommand": "pnpm dev",
-  "installCommand": "./setup.sh",
-  "outputDirectory": "dist"
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": "dist",
+  "trailingSlash": true,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
