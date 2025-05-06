@@ -27,8 +27,8 @@ export async function createApp(): Promise<express.Application> {
   app.use(
     cors({
       origin: [
-        'https://product-crud-five.vercel.app',
-        'https://product-crud-gqoruutjr-yayobytes-projects.vercel.app',
+        'https://frontend-bice-eta.vercel.app',
+        'https://frontend-yayobyte-yayobytes-projects.vercel.app',
         'http://localhost:3000',
         'http://localhost:5173',
       ],

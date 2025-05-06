@@ -116,12 +116,19 @@ This project uses GitHub Actions for continuous integration and deployment.
 
 ### Vercel Deployment
 
-The API is automatically deployed to Vercel through the CI/CD pipeline.
+Both the frontend and backend are automatically deployed to Vercel through the CI/CD pipeline.
+
+#### Backend Deployment
 
 - **Live API**: [https://backend-5t8eol3t9-yayobytes-projects.vercel.app](https://backend-5t8eol3t9-yayobytes-projects.vercel.app)
 - **API Endpoints**:
   - Products: https://backend-5t8eol3t9-yayobytes-projects.vercel.app/api/products
   - Authentication: https://backend-5t8eol3t9-yayobytes-projects.vercel.app/api/auth/login
+
+#### Frontend Deployment
+
+- **Live UI**: [https://frontend-bice-eta.vercel.app](https://frontend-bice-eta.vercel.app)
+- **Alternative URL**: [https://frontend-yayobyte-yayobytes-projects.vercel.app](https://frontend-yayobyte-yayobytes-projects.vercel.app)
 
 ### Coverage Reports
 
