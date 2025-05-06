@@ -19,6 +19,11 @@ on:
       - 'package.json'
       - 'pnpm-workspace.yaml'
 
+# Cancel in-progress runs when a new workflow with the same group is triggered
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # Define the jobs in the workflow
 jobs:
   # Check if backend files changed
@@ -192,7 +197,7 @@ jobs:
       # Step 5: Deploy to Vercel (Preview)
       - name: Deploy to Vercel Preview
         working-directory: packages/backend
-        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes
+        run: vercel deploy --token \${{ secrets.VERCEL_TOKEN }} --yes
 
   # Fourth job: Deploy backend to production (for pushes to main)
   deploy-backend-production:
@@ -207,7 +212,7 @@ jobs:
       # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
-
+        
       # Step 2: Download the build artifacts
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -220,7 +225,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-
+          
       # Step 4: Install Vercel CLI
       - name: Install Vercel CLI
         run: npm install -g vercel
@@ -228,19 +233,18 @@ jobs:
       # Step 5: Deploy to Vercel Production
       - name: Deploy to Vercel (Production)
         working-directory: packages/backend
-        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
+        run: vercel deploy --token \${{ secrets.VERCEL_TOKEN }} --prod --yes
 
       # Step 6: Send notification about successful deployment
       - name: Send deployment notification
         if: success()
-        run: echo "Successfully deployed to Vercel production environment"
-
+        run: echo "Successfully deployed backend to Vercel production environment"
+        
   # Frontend jobs
-
   # Frontend build and test job
   frontend-build:
     needs: paths-filter
-    if: ${{ needs.paths-filter.outputs.frontend == 'true' }}
+    if: \${{ needs.paths-filter.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       # Step 1: Check out the repository code
@@ -306,7 +310,7 @@ jobs:
         run: npm install -g vercel
       - name: Deploy to Vercel Preview
         working-directory: packages/frontend
-        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes
+        run: vercel deploy --token \${{ secrets.VERCEL_TOKEN }} --yes
 
   # Deploy frontend to production
   deploy-frontend-production:
@@ -330,4 +334,4 @@ jobs:
         run: npm install -g vercel
       - name: Deploy to Vercel Production
         working-directory: packages/frontend
-        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
+        run: vercel deploy --token \${{ secrets.VERCEL_TOKEN }} --prod --yes
