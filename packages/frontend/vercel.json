@@ -1,7 +1,6 @@
 {
   "framework": "vite",
-  "buildCommand": "cd ../.. && pnpm install --filter frontend... && cd packages/frontend && pnpm build",
-  "devCommand": "pnpm dev",
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "npm install && npm run build",
+  "devCommand": "npm run dev",
   "outputDirectory": "dist"
 }
