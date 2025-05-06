@@ -288,50 +288,24 @@ jobs:
           name: frontend-build
           path: packages/frontend/dist
 
-  # Deploy frontend to preview
-  deploy-frontend-preview:
+  # Deploy frontend to preview - using Vercel GitHub Integration instead
+  deploy-frontend-preview-notification:
     if: github.event_name == 'pull_request' && needs.paths-filter.outputs.frontend == 'true'
     needs: [paths-filter, frontend-build]
     runs-on: ubuntu-latest
     environment:
       name: preview-frontend
     steps:
-      - uses: actions/checkout@v4
-      - name: Download frontend build
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-build
-          path: packages/frontend/dist
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-      - name: Deploy to Vercel Preview
-        working-directory: packages/frontend
-        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --yes
+      - name: Vercel Preview Deployment Notification
+        run: echo "Frontend preview is being deployed via Vercel GitHub Integration. Check the Vercel dashboard for deployment status."
 
-  # Deploy frontend to production
-  deploy-frontend-production:
+  # Deploy frontend to production - using Vercel GitHub Integration instead
+  deploy-frontend-notification:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && needs.paths-filter.outputs.frontend == 'true'
     needs: [paths-filter, frontend-build]
     runs-on: ubuntu-latest
     environment:
       name: production-frontend
     steps:
-      - uses: actions/checkout@v4
-      - name: Download frontend build
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-build
-          path: packages/frontend/dist
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-      - name: Deploy to Vercel Production
-        working-directory: packages/frontend
-        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
+      - name: Vercel Deployment Notification
+        run: echo "Frontend is being deployed via Vercel GitHub Integration. Check the Vercel dashboard for deployment status."
