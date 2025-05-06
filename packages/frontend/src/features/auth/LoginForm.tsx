@@ -3,8 +3,13 @@ import type { LoginCredentials } from '../../types';
 import { ErrorAlert } from '../../components/ui/ErrorAlert';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
+import { themeColors } from '../../theme';
 
-export const LoginForm = () => {
+interface LoginFormProps {
+  onBack?: () => void;
+}
+
+export const LoginForm = ({ onBack }: LoginFormProps = {}) => {
   const [credentials, setCredentials] = useState<LoginCredentials>({
     username: '',
     password: '',
@@ -50,10 +55,21 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div
+      className={`flex min-h-screen items-center justify-center bg-[${themeColors.gray50}] px-4 py-12 sm:px-6 lg:px-8`}
+    >
       <div className="w-full max-w-md space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+        <div className="flex flex-col items-center">
+          {typeof onBack === 'function' && (
+            <div className="self-start mb-4">
+              <Button onClick={onBack} variant="outline" size="sm">
+                ← Back to Home
+              </Button>
+            </div>
+          )}
+          <h2
+            className={`mt-6 text-center text-3xl font-bold tracking-tight text-[${themeColors.gray900}]`}
+          >
             Sign in to your account
           </h2>
         </div>
@@ -109,9 +125,19 @@ export const LoginForm = () => {
         </form>
 
         <div className="text-sm text-center mt-4">
-          <p className="text-gray-600">
-            Demo credentials: username: <code>admin</code>, password:{' '}
-            <code>password</code>
+          <p className={`text-[${themeColors.gray600}]`}>
+            Demo credentials: username:{' '}
+            <code
+              className={`bg-[${themeColors.gray100}] text-[${themeColors.gray700}] px-1 py-0.5 rounded`}
+            >
+              admin
+            </code>
+            , password:{' '}
+            <code
+              className={`bg-[${themeColors.gray100}] text-[${themeColors.gray700}] px-1 py-0.5 rounded`}
+            >
+              password
+            </code>
           </p>
         </div>
       </div>

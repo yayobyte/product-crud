@@ -1,4 +1,5 @@
 import { type InputHTMLAttributes, forwardRef } from 'react';
+import { themeColors, radii } from '../../theme';
 
 /**
  * Input component props extending HTML input attributes
@@ -35,9 +36,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     // Determine input class names based on state
     const inputClasses = [
-      'shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight',
-      'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-      error ? 'border-red-500' : 'border-gray-300',
+      'shadow-sm appearance-none border rounded w-full py-2 px-3 leading-tight',
+      `text-[${themeColors.gray700}]`,
+      `focus:outline-none focus:ring-2 focus:ring-[${themeColors.primary500}] focus:border-[${themeColors.primary500}]`,
+      error
+        ? `border-[${themeColors.danger500}]`
+        : `border-[${themeColors.gray300}]`,
       className,
     ].join(' ');
 
@@ -46,7 +50,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-gray-700 text-sm font-medium mb-1"
+            className={`block text-[${themeColors.gray700}] text-sm font-medium mb-1`}
           >
             {label}
           </label>
@@ -68,13 +72,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         />
 
         {error && (
-          <p id={`${inputId}-error`} className="text-red-500 text-xs mt-1">
+          <p
+            id={`${inputId}-error`}
+            className={`text-[${themeColors.danger500}] text-xs mt-1`}
+          >
             {error}
           </p>
         )}
 
         {helperText && !error && (
-          <p id={`${inputId}-helper`} className="text-gray-500 text-xs mt-1">
+          <p
+            id={`${inputId}-helper`}
+            className={`text-[${themeColors.gray500}] text-xs mt-1`}
+          >
             {helperText}
           </p>
         )}

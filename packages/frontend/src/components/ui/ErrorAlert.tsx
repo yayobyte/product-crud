@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { themeColors } from '../../theme';
 
 /**
  * ErrorAlert component props
@@ -18,12 +19,12 @@ export interface ErrorAlertProps {
  */
 export const ErrorAlert = ({ message, title, onDismiss }: ErrorAlertProps) => {
   return (
-    <div className="rounded-md bg-red-50 p-4">
+    <div className={`rounded-md bg-[${themeColors.danger50}] p-4`}>
       <div className="flex">
         {/* Error icon */}
         <div className="flex-shrink-0">
           <svg
-            className="h-5 w-5 text-red-400"
+            className={`h-5 w-5 text-[${themeColors.danger500}]`}
             viewBox="0 0 20 20"
             fill="currentColor"
             aria-hidden="true"
@@ -39,9 +40,15 @@ export const ErrorAlert = ({ message, title, onDismiss }: ErrorAlertProps) => {
         {/* Error content */}
         <div className="ml-3">
           {title && (
-            <h3 className="text-sm font-medium text-red-800">{title}</h3>
+            <h3
+              className={`text-sm font-medium text-[${themeColors.danger700}]`}
+            >
+              {title}
+            </h3>
           )}
-          <div className={`text-sm ${title ? 'mt-2' : ''} text-red-700`}>
+          <div
+            className={`text-sm ${title ? 'mt-2' : ''} text-[${themeColors.danger700}]`}
+          >
             {message}
           </div>
         </div>
@@ -53,7 +60,7 @@ export const ErrorAlert = ({ message, title, onDismiss }: ErrorAlertProps) => {
               <button
                 type="button"
                 onClick={onDismiss}
-                className="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
+                className={`inline-flex rounded-md bg-[${themeColors.danger50}] p-1.5 text-[${themeColors.danger500}] hover:bg-[${themeColors.danger100}] focus:outline-none focus:ring-2 focus:ring-[${themeColors.danger500}] focus:ring-offset-2 focus:ring-offset-[${themeColors.danger50}]`}
               >
                 <span className="sr-only">Dismiss</span>
                 <svg
