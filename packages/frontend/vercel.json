@@ -1,6 +1,7 @@
 {
   "framework": "vite",
-  "buildCommand": "npm install && npm run build",
-  "devCommand": "npm run dev",
+  "buildCommand": "./setup.sh && pnpm build",
+  "devCommand": "pnpm dev",
+  "installCommand": "./setup.sh",
   "outputDirectory": "dist"
 }
