@@ -24,7 +24,19 @@ export async function createApp(): Promise<express.Application> {
   const authService = new AuthService(userRepository);
 
   // Middleware
-  app.use(cors());
+  app.use(
+    cors({
+      origin: [
+        'https://product-crud-five.vercel.app',
+        'https://product-crud-gqoruutjr-yayobytes-projects.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:5173',
+      ],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
+    })
+  );
   app.use(express.json());
 
   // Create routers by injecting services
