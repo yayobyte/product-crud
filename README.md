@@ -48,11 +48,30 @@ This is a monorepo managed with pnpm workspaces containing:
     ```
 3.  Set up environment variables:
     *   **Backend**:
-        ```bash
-        # Create .env file in packages/backend
-        cp packages/backend/.env.example packages/backend/.env
-        # Edit as needed (e.g., JWT_SECRET, PORT)
+        The backend requires a `.env` file located in `packages/backend/` for configuration.
+        A critical variable is `JWT_SECRET`, used for signing and verifying JSON Web Tokens.
+
+        1.  Copy the example file:
+            ```bash
+            cp packages/backend/.env.example packages/backend/.env
+            ```
+        2.  **Ensure `packages/backend/.env` contains a strong, unique `JWT_SECRET`**. 
+            You can generate a secure secret using a command like:
+            ```bash
+            node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+            ```
+            Paste the generated value into the `JWT_SECRET` field in `packages/backend/.env`.
+        3.  Adjust other variables like `PORT` if needed.
+
+        Example `packages/backend/.env` content:
+        ```properties
+        # Environment variables for the backend
+
+        # Example generation: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+        JWT_SECRET=your_generated_strong_secret_here
+        PORT=3001
         ```
+
     *   **Frontend**:
         The frontend uses Vite for environment variables. The primary variable is `VITE_API_BASE_URL`.
         You can create a `.env` file in `packages/frontend` (e.g., `.env.development.local` or `.env.local`) to override the default if needed:
