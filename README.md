@@ -12,12 +12,14 @@ This is a monorepo managed with pnpm workspaces containing:
 ## Features
 
 ### Backend
+
 - RESTful API for products (CRUD operations).
 - Authentication with JWT.
 - Role-based access control (Admin and User roles).
 - Comprehensive testing (unit, integration, and coverage).
 
 ### Frontend
+
 - Responsive user interface for product management.
 - Product listing, detail view, creation, editing, and deletion.
 - User login with role-specific UI elements (e.g., admin-only actions).
@@ -26,6 +28,7 @@ This is a monorepo managed with pnpm workspaces containing:
 - Styling with Tailwind CSS.
 
 ### General
+
 - CI/CD pipeline with GitHub Actions for both backend and frontend.
 
 ## Development
@@ -47,54 +50,58 @@ This is a monorepo managed with pnpm workspaces containing:
     pnpm install
     ```
 3.  Set up environment variables:
-    *   **Backend**:
-        The backend requires a `.env` file located in `packages/backend/` for configuration.
-        A critical variable is `JWT_SECRET`, used for signing and verifying JSON Web Tokens.
 
-        1.  Copy the example file:
-            ```bash
-            cp packages/backend/.env.example packages/backend/.env
-            ```
-        2.  **Ensure `packages/backend/.env` contains a strong, unique `JWT_SECRET`**. 
-            You can generate a secure secret using a command like:
-            ```bash
-            node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-            ```
-            Paste the generated value into the `JWT_SECRET` field in `packages/backend/.env`.
-        3.  Adjust other variables like `PORT` if needed.
+    - **Backend**:
+      The backend requires a `.env` file located in `packages/backend/` for configuration.
+      A critical variable is `JWT_SECRET`, used for signing and verifying JSON Web Tokens.
 
-        Example `packages/backend/.env` content:
-        ```properties
-        # Environment variables for the backend
+      1.  Copy the example file:
+          ```bash
+          cp packages/backend/.env.example packages/backend/.env
+          ```
+      2.  **Ensure `packages/backend/.env` contains a strong, unique `JWT_SECRET`**.
+          You can generate a secure secret using a command like:
+          ```bash
+          node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+          ```
+          Paste the generated value into the `JWT_SECRET` field in `packages/backend/.env`.
+      3.  Adjust other variables like `PORT` if needed.
 
-        # Example generation: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-        JWT_SECRET=your_generated_strong_secret_here
-        PORT=3001
-        ```
+      Example `packages/backend/.env` content:
 
-    *   **Frontend**:
-        The frontend uses Vite for environment variables. The primary variable is `VITE_API_BASE_URL`.
-        You can create a `.env` file in `packages/frontend` (e.g., `.env.development.local` or `.env.local`) to override the default if needed:
-        ```env
-        VITE_API_BASE_URL=http://localhost:3001/api
-        ```
-        The default is usually set in `packages/frontend/src/api/axiosInstance.ts` or configured to point to the backend's development server.
+      ```properties
+      # Environment variables for the backend
+
+      # Example generation: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+      JWT_SECRET=your_generated_strong_secret_here
+      PORT=3001
+      ```
+
+    - **Frontend**:
+      The frontend uses Vite for environment variables. The primary variable is `VITE_API_BASE_URL`.
+      You can create a `.env` file in `packages/frontend` (e.g., `.env.development.local` or `.env.local`) to override the default if needed:
+      ```env
+      VITE_API_BASE_URL=http://localhost:3001/api
+      ```
+      The default is usually set in `packages/frontend/src/api/axiosInstance.ts` or configured to point to the backend's development server.
 
 ### Running the Application
 
-*   **Backend Development Server**:
-    ```bash
-    cd packages/backend
-    pnpm dev
-    ```
-    The backend will typically run on `http://localhost:3001`.
+- **Backend Development Server**:
 
-*   **Frontend Development Server**:
-    ```bash
-    cd packages/frontend
-    pnpm dev
-    ```
-    The frontend will typically run on `http://localhost:5173` (or another port if 5173 is busy) and will connect to the backend API.
+  ```bash
+  cd packages/backend
+  pnpm dev
+  ```
+
+  The backend will typically run on `http://localhost:3001`.
+
+- **Frontend Development Server**:
+  ```bash
+  cd packages/frontend
+  pnpm dev
+  ```
+  The frontend will typically run on `http://localhost:5173` (or another port if 5173 is busy) and will connect to the backend API.
 
 ## Testing
 
@@ -102,42 +109,42 @@ The project includes comprehensive testing for both backend and frontend.
 
 ### Backend Testing
 
--   **Unit Tests**:
-    ```bash
-    cd packages/backend
-    pnpm test
-    ```
--   **Integration Tests**:
-    ```bash
-    cd packages/backend
-    pnpm test:integration
-    ```
--   **Coverage Tests**:
-    ```bash
-    cd packages/backend
-    pnpm test:coverage
-    ```
-    Backend code coverage requirements:
-    - 90% line coverage
-    - 90% function coverage
-    - 90% branch coverage
-    - 90% statement coverage
+- **Unit Tests**:
+  ```bash
+  cd packages/backend
+  pnpm test
+  ```
+- **Integration Tests**:
+  ```bash
+  cd packages/backend
+  pnpm test:integration
+  ```
+- **Coverage Tests**:
+  ```bash
+  cd packages/backend
+  pnpm test:coverage
+  ```
+  Backend code coverage requirements:
+  - 90% line coverage
+  - 90% function coverage
+  - 90% branch coverage
+  - 90% statement coverage
 
 ### Frontend Testing
 
--   **Unit & Component Tests**:
-    The frontend uses Vitest and React Testing Library for tests.
-    ```bash
-    cd packages/frontend
-    pnpm test
-    ```
--   **Coverage Tests (Frontend)**:
-    To run tests with coverage for the frontend:
-    ```bash
-    cd packages/frontend
-    pnpm test:coverage 
-    ```
-    *(Ensure `test:coverage` script is defined in `packages/frontend/package.json` e.g., `"test:coverage": "vitest run --coverage"`)*
+- **Unit & Component Tests**:
+  The frontend uses Vitest and React Testing Library for tests.
+  ```bash
+  cd packages/frontend
+  pnpm test
+  ```
+- **Coverage Tests (Frontend)**:
+  To run tests with coverage for the frontend:
+  ```bash
+  cd packages/frontend
+  pnpm test:coverage
+  ```
+  _(Ensure `test:coverage` script is defined in `packages/frontend/package.json` e.g., `"test:coverage": "vitest run --coverage"`)_
 
 ## CI/CD Pipeline
 
@@ -167,13 +174,15 @@ This project uses GitHub Actions for continuous integration and deployment for b
 Both the frontend and backend are automatically deployed to Vercel through the CI/CD pipeline.
 
 #### Backend Deployment
-- **Live API**: [https://product-crud-backend-yayobyte.vercel.app/](https://product-crud-backend-yayobyte.vercel.app/) (Example URL, replace with your actual deployed backend URL)
+
+- **Live API**: [https://backend-yayobytes-projects.vercel.app](https://backend-yayobytes-projects.vercel.app)
 - **API Endpoints**:
   - Products: `/api/products`
   - Authentication: `/api/auth/login`
 
 #### Frontend Deployment
-- **Live UI**: [https://product-crud-yayobyte.vercel.app/](https://product-crud-yayobyte.vercel.app/) (Example URL, replace with your actual deployed frontend URL)
+
+- **Live UI**: [https://frontend-bice-eta.vercel.app/](https://frontend-bice-eta.vercel.app/)
 
 ## Frontend Overview
 
@@ -184,18 +193,18 @@ The frontend application is built with modern web technologies:
 - **Routing**: React Router DOM for client-side navigation.
 - **Styling**: Tailwind CSS for utility-first CSS.
 - **State Management**:
-    - Local component state (`useState`, `useReducer`).
-    - Shared authentication state via React Context API (`AuthContext`, `useAuth` hook).
+  - Local component state (`useState`, `useReducer`).
+  - Shared authentication state via React Context API (`AuthContext`, `useAuth` hook).
 - **API Communication**: `axios` (via a configured `apiClient` instance) for making HTTP requests to the backend.
 - **Error Handling**:
-    - **Global API Errors**: An Axios interceptor in `axiosInstance.ts` handles 401 Unauthorized errors by dispatching an event, leading to user logout and redirection to the login page.
-    - **UI Rendering Errors**: `react-error-boundary` is used to catch JavaScript errors in the component tree and display a fallback UI, preventing a full application crash.
+  - **Global API Errors**: An Axios interceptor in `axiosInstance.ts` handles 401 Unauthorized errors by dispatching an event, leading to user logout and redirection to the login page.
+  - **UI Rendering Errors**: `react-error-boundary` is used to catch JavaScript errors in the component tree and display a fallback UI, preventing a full application crash.
 - **Component Structure**:
-    - `features/`: Contains components related to specific application features (e.g., products, auth).
-    - `components/`: Shared UI components (`layout`, `ui` elements like `ProductCard`, `ProductForm`).
-    - `services/`: Modules for interacting with the backend API (e.g., `productService`, `authService`).
-    - `hooks/`: Custom React hooks (e.g., `useAuth`).
-    - `context/`: React context for global state (e.g., `AuthContext`).
+  - `features/`: Contains components related to specific application features (e.g., products, auth).
+  - `components/`: Shared UI components (`layout`, `ui` elements like `ProductCard`, `ProductForm`).
+  - `services/`: Modules for interacting with the backend API (e.g., `productService`, `authService`).
+  - `hooks/`: Custom React hooks (e.g., `useAuth`).
+  - `context/`: React context for global state (e.g., `AuthContext`).
 
 ## API Documentation
 
