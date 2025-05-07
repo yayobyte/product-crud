@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom'; // Import useNavigate
+import { useParams, Link } from 'react-router-dom';
 import type { Product } from '../../types/product';
 import { getProductById } from '../../services/productService';
-import { Rating } from '../../components/ui/Rating'; // Import Rating component
+import { Rating } from '../../components/ui/Rating';
 
 export const ProductDetailPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -63,7 +63,7 @@ export const ProductDetailPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <Link
         to="/"
-        className="mb-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-150"
+        className="mb-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150 cursor-pointer"
       >
         &larr; Back to Products
       </Link>

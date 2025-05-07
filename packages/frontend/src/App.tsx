@@ -5,6 +5,9 @@ import { MainLayout } from './components/layout/MainLayout';
 import { ThemeProvider } from './theme';
 import { AuthProvider } from './context/AuthContext';
 import { ProductDetailPage } from './features/products/ProductDetailPage';
+import ProtectedRoute from './components/routes/ProtectedRoute'; // Import ProtectedRoute
+import { UserRole } from './types/roles'; // Import UserRole
+import { AddProductPage } from './features/products/AddProductPage';
 import './App.css';
 
 function App() {
@@ -23,9 +26,21 @@ function App() {
           <Route
             path="/products/:productId"
             element={
-              <MainLayout>
-                <ProductDetailPage />
-              </MainLayout>
+              <ProtectedRoute role={[UserRole.USER, UserRole.ADMIN]}>
+                <MainLayout>
+                  <ProductDetailPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products/new"
+            element={
+              <ProtectedRoute role={UserRole.ADMIN}>
+                <MainLayout>
+                  <AddProductPage />
+                </MainLayout>
+              </ProtectedRoute>
             }
           />
           <Route path="/login" element={<LoginForm />} />

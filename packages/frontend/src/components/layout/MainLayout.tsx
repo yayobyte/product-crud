@@ -2,6 +2,7 @@ import React from 'react';
 import type { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { UserRole } from '../../types';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -30,7 +31,18 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 ProductCRUD
               </Link>
             </div>
+
             <ul className="flex items-center space-x-4 sm:space-x-6">
+              <li>
+                {user && user.role === UserRole.ADMIN && (
+                  <Link
+                    to="/products/new"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150"
+                  >
+                    Add Product
+                  </Link>
+                )}
+              </li>
               <li>
                 <Link
                   to="/"
@@ -39,6 +51,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   Products
                 </Link>
               </li>
+              <hr />
               {isLoading ? (
                 <li>
                   <span className="text-gray-600 px-3 py-2 text-sm font-medium">
