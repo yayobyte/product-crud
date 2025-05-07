@@ -1,5 +1,10 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { createProductRoutes } from './routes/products';
 import { createAuthRoutes } from './routes/auth';
 import { HttpError } from './errors/httpErrors';
@@ -37,6 +42,7 @@ export async function createApp(): Promise<express.Application> {
       credentials: true,
     })
   );
+  app.use(helmet());
   app.use(express.json());
 
   // Create routers by injecting services
