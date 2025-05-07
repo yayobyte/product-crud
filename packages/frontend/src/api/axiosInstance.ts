@@ -28,12 +28,12 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('authToken');
-      // window.location.href = '/login';
       console.error(
         'Unauthorized request or token expired:',
         error.response.data
       );
+      // Dispatch a custom event to be caught by a React component
+      window.dispatchEvent(new CustomEvent('unauthorized'));
     }
     return Promise.reject(error);
   }
