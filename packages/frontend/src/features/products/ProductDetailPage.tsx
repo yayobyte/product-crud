@@ -3,12 +3,15 @@ import { useParams, Link } from 'react-router-dom';
 import type { Product } from '../../types/product';
 import { getProductById } from '../../services/productService';
 import { Rating } from '../../components/ui/Rating';
+import { useAuth } from '../../hooks/useAuth';
+import { UserRole } from '../../types/roles';
 
 export const ProductDetailPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!productId) {
@@ -61,12 +64,22 @@ export const ProductDetailPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link
-        to="/"
-        className="mb-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150 cursor-pointer"
-      >
-        &larr; Back to Products
-      </Link>
+      <div className="flex justify-left items-center mb-6 gap-4">
+        <Link
+          to="/"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150 cursor-pointer"
+        >
+          &larr; Back to Products
+        </Link>
+        {user && user.role === UserRole.ADMIN && product && (
+          <Link
+            to={`/products/${product.id}/edit`}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150 cursor-pointer"
+          >
+            Edit Product
+          </Link>
+        )}
+      </div>
 
       <div className="bg-white shadow-xl rounded-lg overflow-hidden md:flex">
         <div className="md:w-1/2 p-4">

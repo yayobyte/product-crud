@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { LoginForm } from './features/auth/LoginForm';
 import { ProductsPage } from './features/products/ProductsPage';
 import { MainLayout } from './components/layout/MainLayout';
@@ -8,9 +8,11 @@ import { ProductDetailPage } from './features/products/ProductDetailPage';
 import ProtectedRoute from './components/routes/ProtectedRoute'; // Import ProtectedRoute
 import { UserRole } from './types/roles'; // Import UserRole
 import { AddProductPage } from './features/products/AddProductPage';
+import { EditProductPage } from './features/products/EditProductPage'; // Import EditProductPage
 import './App.css';
 
 function App() {
+  const navigate = useNavigate();
   return (
     <ThemeProvider>
       <AuthProvider>
@@ -43,7 +45,20 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/login" element={<LoginForm />} />
+          <Route
+            path="/products/:productId/edit" // Add route for editing a product
+            element={
+              <ProtectedRoute role={UserRole.ADMIN}>
+                <MainLayout>
+                  <EditProductPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={<LoginForm onLoginSuccess={() => navigate('/')} />}
+          />
         </Routes>
       </AuthProvider>
     </ThemeProvider>
