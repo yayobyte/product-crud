@@ -3,7 +3,8 @@ import { LoginForm } from './features/auth/LoginForm';
 import { ProductsPage } from './features/products/ProductsPage';
 import { MainLayout } from './components/layout/MainLayout';
 import { ThemeProvider } from './theme';
-import { AuthProvider } from './context/AuthContext'; // Import AuthProvider
+import { AuthProvider } from './context/AuthContext';
+import { ProductDetailPage } from './features/products/ProductDetailPage';
 import './App.css';
 
 function App() {
@@ -16,6 +17,14 @@ function App() {
             element={
               <MainLayout>
                 <ProductsPage />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/products/:productId"
+            element={
+              <MainLayout>
+                <ProductDetailPage />
               </MainLayout>
             }
           />
