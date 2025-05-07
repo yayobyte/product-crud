@@ -1,5 +1,5 @@
 import { type InputHTMLAttributes, forwardRef } from 'react';
-import { themeColors, radii } from '../../theme';
+import { themeColors } from '../../theme';
 
 /**
  * Input component props extending HTML input attributes
