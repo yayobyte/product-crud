@@ -2,6 +2,7 @@ import { UnauthorizedError, NotFoundError } from '../errors/httpErrors';
 import { UserRepository } from '../repositories/UserRepository';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { User } from '../types/user'; // Ensure User type is imported
 
 export class AuthService {
   private userRepository: UserRepository;
@@ -37,5 +38,14 @@ export class AuthService {
     );
 
     return token;
+  }
+
+  async getUserProfile(userId: number): Promise<Omit<User, 'passwordHash'>> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+    const { passwordHash, ...userProfile } = user;
+    return userProfile;
   }
 }

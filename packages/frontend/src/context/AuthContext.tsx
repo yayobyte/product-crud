@@ -1,8 +1,11 @@
 import { createContext, useState, useEffect, type ReactNode } from 'react';
-import { login as authServiceLogin, getMe as authServiceGetMe } from '../services/authService';
+import {
+  login as authServiceLogin,
+  getMe as authServiceGetMe,
+} from '../services/authService';
 import type { LoginCredentials, User } from '../types/user';
 
-interface AuthContextType {
+export interface AuthContextType {
   token: string | null;
   user: User | null;
   isLoading: boolean;
@@ -10,7 +13,9 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(() =>
@@ -26,7 +31,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           const profileResponse = await authServiceGetMe();
           setUser(profileResponse.user);
-          console.log('User profile fetched successfully:', profileResponse.user);
+          console.log(
+            'User profile fetched successfully:',
+            profileResponse.user
+          );
         } catch (error) {
           console.error('Failed to fetch user profile:', error);
           localStorage.removeItem('authToken');
