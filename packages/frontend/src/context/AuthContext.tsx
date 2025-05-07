@@ -13,8 +13,8 @@ export interface AuthContextType {
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
+export const AuthContext = createContext<AuthContextType>(
+  {} as AuthContextType
 );
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -31,12 +31,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
           const profileResponse = await authServiceGetMe();
           setUser(profileResponse.user);
-          console.log(
-            'User profile fetched successfully:',
-            profileResponse.user
-          );
         } catch (error) {
-          console.error('Failed to fetch user profile:', error);
+          console.error('AuthContext: Failed to fetch user profile:', error);
           localStorage.removeItem('authToken');
           setToken(null);
           setUser(null);
@@ -60,12 +56,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const newToken = loginResponse.token;
         localStorage.setItem('authToken', newToken);
         setToken(newToken);
-        console.log('Login successful via AuthContext');
+
+        const profileResponse = await authServiceGetMe();
+        setUser(profileResponse.user);
       } else {
         throw new Error('Login failed: No token received from server.');
       }
     } catch (error) {
-      console.error('AuthContext login error:', error);
       localStorage.removeItem('authToken');
       setToken(null);
       setUser(null);
@@ -76,16 +73,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    setIsLoading(true);
     localStorage.removeItem('authToken');
     setToken(null);
-    console.log('Logged out via AuthContext');
-    setIsLoading(false);
+    setUser(null);
   };
 
   return (
     <AuthContext.Provider value={{ token, user, isLoading, login, logout }}>
-      {children}
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <p>Loading...</p>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

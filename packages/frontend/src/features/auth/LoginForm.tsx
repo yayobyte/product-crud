@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import axios from 'axios';
-import apiClient from '../../api/axiosInstance';
 import type { LoginCredentials } from '../../types/user';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+
 interface LoginFormProps {
   onBack?: () => void;
   onLoginSuccess?: () => void;
 }
 
 export const LoginForm = ({ onBack, onLoginSuccess }: LoginFormProps = {}) => {
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const { login, user } = authContext;
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
   const [credentials, setCredentials] = useState<LoginCredentials>({
     username: '',
     password: '',
@@ -31,16 +43,9 @@ export const LoginForm = ({ onBack, onLoginSuccess }: LoginFormProps = {}) => {
     setError(null);
 
     try {
-      const response = await apiClient.post('/auth/login', credentials);
-
-      if (response.data && response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
-        console.log('Login successful, token stored:', response.data.token);
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        }
-      } else {
-        setError('Login failed: No token received from server.');
+      await login(credentials);
+      if (onLoginSuccess) {
+        onLoginSuccess();
       }
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response) {
@@ -53,7 +58,6 @@ export const LoginForm = ({ onBack, onLoginSuccess }: LoginFormProps = {}) => {
       } else {
         setError('An unexpected error occurred during login.');
       }
-      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }

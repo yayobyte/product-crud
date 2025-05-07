@@ -26,7 +26,9 @@ export const login = async (
 
 export const getMe = async (): Promise<UserProfileResponse> => {
   try {
+    console.log('AuthService: Initiating getMe API call to /auth/me');
     const response = await apiClient.get<UserProfileResponse>('/auth/me');
+    console.log('AuthService: Received response from /auth/me:', response.data);
     return response.data;
   } catch (error) {
     console.error('AuthService getMe error:', error);
