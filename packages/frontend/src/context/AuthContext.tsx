@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, type ReactNode } from 'react';
-import apiClient from '../api/axiosInstance';
+import { login as authServiceLogin, getMe as authServiceGetMe } from '../services/authService';
 import type { LoginCredentials, User } from '../types/user';
 
 interface AuthContextType {
@@ -24,9 +24,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (token) {
         setIsLoading(true);
         try {
-          const response = await apiClient.get<{ user: User }>('/auth/me');
-          setUser(response.data.user);
-          console.log('User profile fetched successfully:', response.data.user);
+          const profileResponse = await authServiceGetMe();
+          setUser(profileResponse.user);
+          console.log('User profile fetched successfully:', profileResponse.user);
         } catch (error) {
           console.error('Failed to fetch user profile:', error);
           localStorage.removeItem('authToken');
@@ -47,9 +47,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
-      const response = await apiClient.post('/auth/login', credentials);
-      if (response.data && response.data.token) {
-        const newToken = response.data.token;
+      const loginResponse = await authServiceLogin(credentials);
+      if (loginResponse && loginResponse.token) {
+        const newToken = loginResponse.token;
         localStorage.setItem('authToken', newToken);
         setToken(newToken);
         console.log('Login successful via AuthContext');
