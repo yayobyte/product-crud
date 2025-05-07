@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Product } from '../../types/product';
 import { Button } from '../../components/ui/Button';
+import { ProductCard } from '../../components/ui/ProductCard';
 
 const mockProducts: Product[] = [
   {
@@ -48,7 +49,7 @@ const mockProducts: Product[] = [
 
 export const ProductsPage: React.FC = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Our Products</h1>
         <Button variant="primary" size="md">
@@ -58,33 +59,7 @@ export const ProductsPage: React.FC = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {mockProducts.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
-          >
-            <div className="relative h-64 w-full bg-gray-200">
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-full object-contain p-4"
-              />
-            </div>
-            <div className="p-6 flex flex-col flex-grow">
-              <h2
-                className="text-xl font-semibold text-gray-800 mb-2 truncate"
-                title={product.title}
-              >
-                {product.title}
-              </h2>
-              <p className="text-sm text-gray-600 mb-1">{product.category}</p>
-              <p className="text-2xl font-bold text-primary-600 mb-4 mt-auto">
-                ${product.price.toFixed(2)}
-              </p>
-              <Button variant="outline" size="sm" fullWidth>
-                View Details
-              </Button>
-            </div>
-          </div>
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </div>
