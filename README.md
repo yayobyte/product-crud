@@ -39,7 +39,7 @@ This is a monorepo managed with pnpm workspaces containing:
 
 1.  Clone the repository:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/yayobyte/product-crud.git
     cd product-crud
     ```
 2.  Install dependencies from the root of the monorepo:
@@ -148,13 +148,13 @@ This project uses GitHub Actions for continuous integration and deployment for b
 Both the frontend and backend are automatically deployed to Vercel through the CI/CD pipeline.
 
 #### Backend Deployment
-- **Live API**: [https://product-crud-backend-alpha.vercel.app/](https://product-crud-backend-alpha.vercel.app/) (Example URL, replace with your actual)
+- **Live API**: [https://product-crud-backend-yayobyte.vercel.app/](https://product-crud-backend-yayobyte.vercel.app/) (Example URL, replace with your actual deployed backend URL)
 - **API Endpoints**:
   - Products: `/api/products`
   - Authentication: `/api/auth/login`
 
 #### Frontend Deployment
-- **Live UI**: [https://product-crud-frontend-alpha.vercel.app/](https://product-crud-frontend-alpha.vercel.app/) (Example URL, replace with your actual)
+- **Live UI**: [https://product-crud-yayobyte.vercel.app/](https://product-crud-yayobyte.vercel.app/) (Example URL, replace with your actual deployed frontend URL)
 
 ## Frontend Overview
 
