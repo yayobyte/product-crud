@@ -112,7 +112,7 @@ This project uses GitHub Actions for continuous integration and deployment.
 4. **Deploy (Production)**:
    - For pushes to main branch only
    - Deploys to Vercel production environment
-   - Live API URL: https://backend-5t8eol3t9-yayobytes-projects.vercel.app
+   - Live API URL: https://backend-yayobytes-projects.vercel.app/
 
 ### Vercel Deployment
 
@@ -120,19 +120,14 @@ Both the frontend and backend are automatically deployed to Vercel through the C
 
 #### Backend Deployment
 
-- **Live API**: [https://backend-5t8eol3t9-yayobytes-projects.vercel.app](https://backend-5t8eol3t9-yayobytes-projects.vercel.app)
+- **Live API**: [https://backend-yayobytes-projects.vercel.app/](https://backend-yayobytes-projects.vercel.app/)
 - **API Endpoints**:
-  - Products: https://backend-5t8eol3t9-yayobytes-projects.vercel.app/api/products
-  - Authentication: https://backend-5t8eol3t9-yayobytes-projects.vercel.app/api/auth/login
+  - Products: https://backend-yayobytes-projects.vercel.app/api/products
+  - Authentication: https://backend-yayobytes-projects.vercel.app/api/auth/login
 
 #### Frontend Deployment
 
 - **Live UI**: [https://frontend-bice-eta.vercel.app](https://frontend-bice-eta.vercel.app)
-- **Alternative URL**: [https://frontend-yayobyte-yayobytes-projects.vercel.app](https://frontend-yayobyte-yayobytes-projects.vercel.app)
-
-### Coverage Reports
-
-Test coverage is tracked using CodeCov. Each PR includes a coverage report to ensure code quality is maintained.
 
 ## API Documentation
 

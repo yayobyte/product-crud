@@ -47,7 +47,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6"
+      data-testid="product-form"
+    >
       <div>
         <label
           htmlFor="title"
