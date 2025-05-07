@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom'; // Import useNavigate
+import { useParams, Link } from 'react-router-dom'; // Import useNavigate
 import type { Product } from '../../types/product';
 import { getProductById } from '../../services/productService';
 import { Rating } from '../../components/ui/Rating'; // Import Rating component
 
 export const ProductDetailPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
-  const navigate = useNavigate(); // Get navigate function
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
