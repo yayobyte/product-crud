@@ -79,7 +79,7 @@ export const ProductDetailPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-0">
       <Link
         to="/"
         className="inline-block mb-6 text-black hover:text-gray-400 transition-colors duration-150"
