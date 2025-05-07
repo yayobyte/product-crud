@@ -276,8 +276,7 @@ jobs:
       - name: Run frontend tests
         run: |
           cd packages/frontend
-          # Uncomment when tests are added
-          # pnpm test
+          pnpm test
 
       # Step 6: Build the frontend
       - name: Build frontend
