@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import axios from 'axios';
 import apiClient from '../../api/axiosInstance';
 import type { LoginCredentials } from '../../types/user';
+import { Link } from 'react-router-dom';
 interface LoginFormProps {
   onBack?: () => void;
   onLoginSuccess?: () => void;
@@ -61,6 +62,15 @@ export const LoginForm = ({ onBack, onLoginSuccess }: LoginFormProps = {}) => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-xl">
+        <div>
+          <Link
+            to="/"
+            className="inline-block text-sm text-black hover:text-gray-700 transition-colors duration-150"
+          >
+            &larr; Back to Products
+          </Link>
+        </div>
+
         <div className="flex flex-col items-center">
           {typeof onBack === 'function' && (
             <div className="self-start mb-4">
@@ -147,8 +157,11 @@ export const LoginForm = ({ onBack, onLoginSuccess }: LoginFormProps = {}) => {
         </form>
 
         <div className="text-sm text-center mt-4">
+          <p className="text-gray-800">Demo credentials: </p>
           <p className="text-gray-600">
-            Demo credentials: username: user, password: password456
+            user - password456
+            <br />
+            admin - password123
           </p>
         </div>
       </div>

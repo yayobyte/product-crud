@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
 import { LoginForm } from './features/auth/LoginForm';
 import { ProductsPage } from './features/products/ProductsPage';
 import { MainLayout } from './components/layout/MainLayout';
@@ -11,6 +12,7 @@ import ProtectedRoute from './components/routes/ProtectedRoute';
 import { UserRole } from './types/roles';
 import { AddProductPage } from './features/products/AddProductPage';
 import { EditProductPage } from './features/products/EditProductPage';
+import { ErrorBoundaryFallback } from './components/ui/ErrorBoundaryFallback';
 import './App.css';
 
 const AppContent = () => {
@@ -84,10 +86,28 @@ const AppContent = () => {
 };
 
 function App() {
+  const handleReset = () => {
+    console.log('Error boundary reset triggered.');
+    window.location.reload();
+  };
+
+  const handleError = (
+    error: Error,
+    info: { componentStack?: string | null }
+  ) => {
+    console.error('Caught by Error Boundary:', error, info.componentStack);
+  };
+
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppContent />
+        <ErrorBoundary
+          FallbackComponent={ErrorBoundaryFallback}
+          onReset={handleReset}
+          onError={handleError}
+        >
+          <AppContent />
+        </ErrorBoundary>
       </AuthProvider>
     </ThemeProvider>
   );
