@@ -1,64 +1,62 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Product } from '../../types/product';
-import { Button } from '../../components/ui/Button';
+import { getAllProducts } from '../../services/productService';
 import { ProductCard } from '../../components/ui/ProductCard';
 
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    title: 'Classic Cotton T-Shirt',
-    price: 25.99,
-    description:
-      'A comfortable and durable t-shirt made from 100% premium cotton. Perfect for everyday wear.',
-    category: "Men's Clothing",
-    image:
-      'https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg',
-    rating: { rate: 4.5, count: 150 },
-  },
-  {
-    id: 2,
-    title: 'Slim Fit Denim Jeans',
-    price: 59.99,
-    description:
-      'Modern slim fit jeans crafted from high-quality denim with a slight stretch for comfort.',
-    category: "Men's Clothing",
-    image: 'https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg',
-    rating: { rate: 4.2, count: 250 },
-  },
-  {
-    id: 3,
-    title: 'Wireless Bluetooth Headphones',
-    price: 89.99,
-    description:
-      'High-fidelity wireless headphones with noise-cancellation and long battery life.',
-    category: 'Electronics',
-    image: 'https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg',
-    rating: { rate: 4.8, count: 500 },
-  },
-  {
-    id: 4,
-    title: 'Elegant Leather Backpack',
-    price: 120.0,
-    description:
-      'A stylish and spacious leather backpack, perfect for work or travel. Features multiple compartments.',
-    category: 'Accessories',
-    image: 'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg',
-    rating: { rate: 4.6, count: 120 },
-  },
-];
-
 export const ProductsPage: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getAllProducts();
+        setProducts(data);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+        setError('Failed to load products. Please try again later.');
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-xl text-gray-700">Loading products...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen px-4 text-center">
+        <p className="text-xl text-red-600">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Our Products</h1>
-        <Button variant="primary" size="md">
-          Add New Product
-        </Button>
+        <h1 className="text-3xl font-bold text-gray-800">Products</h1>
       </div>
 
+      {products.length === 0 && !isLoading && (
+        <div className="text-center text-gray-500">
+          <p>No products found.</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {mockProducts.map((product) => (
+        {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
