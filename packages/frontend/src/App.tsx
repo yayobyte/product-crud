@@ -46,7 +46,7 @@ function App() {
             }
           />
           <Route
-            path="/products/:productId/edit" // Add route for editing a product
+            path="/products/:productId/edit"
             element={
               <ProtectedRoute role={UserRole.ADMIN}>
                 <MainLayout>

@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { getProductById, deleteProduct } from '../../services/productService';
 import type { Product } from '../../types/product';
-import { getProductById } from '../../services/productService';
 import { Rating } from '../../components/ui/Rating';
 import { useAuth } from '../../hooks/useAuth';
 import { UserRole } from '../../types/roles';
 
 export const ProductDetailPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
   const { user } = useAuth();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const isAdmin = user?.role === UserRole.ADMIN;
 
   useEffect(() => {
     if (!productId) {
@@ -19,102 +22,123 @@ export const ProductDetailPage: React.FC = () => {
       setIsLoading(false);
       return;
     }
-
-    const fetchProductDetails = async () => {
+    const fetchProduct = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
         const data = await getProductById(productId);
         setProduct(data);
         setError(null);
       } catch (err) {
-        console.error(`Failed to fetch product ${productId}:`, err);
+        console.error('Failed to fetch product:', err);
         setError('Failed to load product details. Please try again later.');
-        setProduct(null);
-      } finally {
-        setIsLoading(false);
       }
+      setIsLoading(false);
     };
-
-    fetchProductDetails();
+    fetchProduct();
   }, [productId]);
+
+  const handleDelete = async () => {
+    if (!productId) {
+      alert('Product ID is missing.');
+      return;
+    }
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await deleteProduct(productId);
+        alert('Product deleted successfully.');
+        navigate('/');
+      } catch (err) {
+        console.error('Failed to delete product:', err);
+        alert('Failed to delete product. Please try again.');
+      }
+    }
+  };
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-xl text-gray-700">Loading product details...</p>
+      <div className="container mx-auto px-4 py-8 text-center">
+        Loading product details...
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col justify-center items-center h-screen px-4 text-center">
-        <p className="text-xl text-red-600">{error}</p>
+      <div className="container mx-auto px-4 py-8 text-center text-red-500">
+        Error: {error}
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-xl text-gray-700">Product not found.</p>
+      <div className="container mx-auto px-4 py-8 text-center">
+        Product not found.
       </div>
     );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-left items-center mb-6 gap-4">
-        <Link
-          to="/"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150 cursor-pointer"
-        >
-          &larr; Back to Products
-        </Link>
-        {user && user.role === UserRole.ADMIN && product && (
-          <Link
-            to={`/products/${product.id}/edit`}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150 cursor-pointer"
-          >
-            Edit Product
-          </Link>
-        )}
-      </div>
-
-      <div className="bg-white shadow-xl rounded-lg overflow-hidden md:flex">
-        <div className="md:w-1/2 p-4">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="w-full h-auto object-contain max-h-[500px] rounded"
-          />
-        </div>
-        <div className="md:w-1/2 p-6 flex flex-col justify-between">
+      <Link
+        to="/"
+        className="inline-block mb-6 text-black hover:text-gray-400 transition-colors duration-150"
+      >
+        &larr; Back to Products
+      </Link>
+      <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-xl mt-6">
+        <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {product.title}
-            </h1>
-            {product.category && (
-              <p className="text-sm text-gray-600 mb-2 uppercase tracking-wider">
-                {product.category}
+            <img
+              src={
+                product.image ||
+                'https://via.placeholder.com/300x400?text=No+Image'
+              }
+              alt={product.title}
+              className="w-full h-auto object-cover rounded-lg shadow-md"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.onerror = null; // prevent infinite loop if placeholder also fails
+                target.src =
+                  'https://via.placeholder.com/300x400?text=No+Image';
+              }}
+            />
+          </div>
+          <div className="flex flex-col justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
+              <p className="text-gray-600 mb-2 text-sm">
+                Category: {product.category}
               </p>
-            )}
-            {product.rating && (
+              <p className="text-2xl font-semibold text-blue-600 mb-4">
+                ${product.price.toFixed(2)}
+              </p>
               <div className="mb-4">
                 <Rating
                   rate={product.rating.rate}
                   count={product.rating.count}
                 />
               </div>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                {product.description}
+              </p>
+            </div>
+            {isAdmin && (
+              <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <Link
+                  to={`/products/${productId}/edit`}
+                  className="w-full sm:w-auto text-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150 cursor-pointer"
+                >
+                  Edit Product
+                </Link>
+                <button
+                  onClick={handleDelete}
+                  className="w-full sm:w-auto text-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150 cursor-pointer"
+                >
+                  Delete Product
+                </button>
+              </div>
             )}
-            <p className="text-gray-700 mb-6 text-base leading-relaxed">
-              {product.description}
-            </p>
-          </div>
-          <div>
-            <p className="text-3xl font-extrabold text-primary-600 mb-6 text-right">
-              ${product.price ? product.price.toFixed(2) : 'N/A'}
-            </p>
           </div>
         </div>
       </div>
