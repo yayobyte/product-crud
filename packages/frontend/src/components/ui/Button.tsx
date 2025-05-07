@@ -1,5 +1,4 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { themeColors } from '../../theme';
 
 /**
  * Button variants for different use cases
@@ -41,14 +40,16 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   // Base styles for all buttons
-  const baseStyles = 'font-medium rounded focus:outline-none transition-colors';
+  const baseStyles =
+    'font-medium rounded focus:outline-none transition-colors transition-shadow';
 
-  // Variant-specific styles with CSS variables from our theme
+  // Variant-specific styles using new theme colors
   const variantStyles = {
-    primary: `bg-[${themeColors.primary600}] hover:bg-[${themeColors.primary700}] text-white`,
-    secondary: 'bg-gray-600 hover:bg-gray-700 text-white',
-    danger: `bg-[${themeColors.danger500}] hover:bg-[${themeColors.danger700}] text-white`,
-    outline: `border border-[${themeColors.primary600}] text-[${themeColors.primary600}] hover:bg-[${themeColors.primary50}]`,
+    primary:
+      'bg-white text-gray-800 shadow-md hover:bg-gray-50 hover:shadow-lg',
+    secondary: 'bg-gray-200 text-gray-700 shadow-sm hover:bg-gray-300',
+    danger: 'border border-red-500 text-red-600 hover:bg-red-50 shadow-sm',
+    outline: 'border border-gray-400 text-gray-700 shadow-sm hover:bg-gray-100',
   };
 
   // Size-specific styles
